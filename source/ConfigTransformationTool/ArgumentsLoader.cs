@@ -46,6 +46,8 @@ namespace OutcoldSolutions.ConfigTransformationTool
 
         public Encoding DefaultEncoding { get; set; }
 
+        public bool IgnoreMissingTransformation { get; set; }
+
         /// <summary>
         /// Load arguments from command line
         /// </summary>
@@ -61,6 +63,7 @@ namespace OutcoldSolutions.ConfigTransformationTool
             this.Verbose = false;
             this.PreserveWhitespace = false;
             this.Indent = false;
+            this.IgnoreMissingTransformation = false;
 
             foreach (string arg in args)
             {
@@ -126,6 +129,12 @@ namespace OutcoldSolutions.ConfigTransformationTool
                     continue;
                 }
 
+                if (arg.Equals("imt", StringComparison.OrdinalIgnoreCase)
+                    || arg.Equals("ignoremissingtransform", StringComparison.OrdinalIgnoreCase))
+                {
+                    this.IgnoreMissingTransformation = true;
+                    continue;
+                }
                 if (arg.IndexOf("ic:", StringComparison.OrdinalIgnoreCase) == 0
                     || arg.IndexOf("indentchars:", StringComparison.OrdinalIgnoreCase) == 0)
                 {

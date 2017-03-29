@@ -81,6 +81,11 @@ namespace OutcoldSolutions.ConfigTransformationTool
         public bool PreserveWhitespace { get; set; }
 
         /// <summary>
+        /// Ignores the missing transform file, skips transformation and generates the source file without changes.
+        /// </summary>
+        public bool IgnoreMissingTransformation { get; set; }
+
+        /// <summary>
         /// Get or sets a value indicating wether the output Xml will be indented.
         /// </summary>
         public bool Indent { get; set; }
@@ -123,70 +128,119 @@ namespace OutcoldSolutions.ConfigTransformationTool
 
             this.log.WriteLine("Start tranformation to '{0}'.", destinationFilePath);
 
-            if (string.IsNullOrWhiteSpace(this.SourceFilePath) || !File.Exists(this.SourceFilePath))
+            var isSourceStdIn = "stdin".Equals(this.SourceFilePath, StringComparison.OrdinalIgnoreCase);
+            if (!isSourceStdIn && (string.IsNullOrWhiteSpace(this.SourceFilePath) || !File.Exists(this.SourceFilePath)))
             {
                 throw new FileNotFoundException("Can't find source file.", this.SourceFilePath);
             }
 
+            var skipTransformation = false;
             if (string.IsNullOrWhiteSpace(this.TransformFile) || !File.Exists(this.TransformFile))
             {
-                throw new FileNotFoundException("Can't find transform  file.", this.TransformFile);
+                if (this.IgnoreMissingTransformation)
+                {
+                    skipTransformation = true;
+                }
+                else
+                {
+                    throw new FileNotFoundException("Can't find transform  file.", this.TransformFile);
+                }
             }
 
             this.log.WriteLine("Source file: '{0}'.", this.SourceFilePath);
-            this.log.WriteLine("Transform  file: '{0}'.", this.TransformFile);
+            if (skipTransformation)
+            {
+                this.log.WriteLine("Transform file not found. Copy source to destination.");
+            } else
+            {
+                this.log.WriteLine("Transform  file: '{0}'.", this.TransformFile);
+            }
 
             try
             {
                 Encoding encoding = this.DefaultEncoding;
 
-                XmlDocument document = new XmlDocument()
-                                           {
-                                               PreserveWhitespace = this.PreserveWhitespace
-                                           };
+                bool result;
+                string outerXml;
 
-                document.Load(this.SourceFilePath);
-                if (document.FirstChild.NodeType == XmlNodeType.XmlDeclaration)
+                if (skipTransformation)
                 {
-                    var xmlDeclaration = (XmlDeclaration)document.FirstChild;
-                    if (!string.IsNullOrEmpty(xmlDeclaration.Encoding))
+                    if (isSourceStdIn)
                     {
-                        encoding = Encoding.GetEncoding(xmlDeclaration.Encoding);
+                        outerXml = Console.In.ReadToEnd();
+                    } else
+                    {
+                        outerXml = File.ReadAllText(this.SourceFilePath);
+                    }
+                    result = true;
+                } else
+                {
+                    XmlDocument document = new XmlDocument()
+                    {
+                        PreserveWhitespace = this.PreserveWhitespace
+                    };
+
+                    if (isSourceStdIn)
+                    {
+                        using (new ConsoleEncodingContext(this.DefaultEncoding))
+                            document.Load(Console.In);
+                    }
+                    else
+                    {
+                        document.Load(this.SourceFilePath);
+                    }
+                    if (document.FirstChild.NodeType == XmlNodeType.XmlDeclaration)
+                    {
+                        var xmlDeclaration = (XmlDeclaration)document.FirstChild;
+                        if (!string.IsNullOrEmpty(xmlDeclaration.Encoding))
+                        {
+                            encoding = Encoding.GetEncoding(xmlDeclaration.Encoding);
+                        }
+                    }
+
+                    this.log.WriteLine("Transformation task is using encoding '{0}'. Change encoding in source file, or use the 'encoding' parameter if you want to change encoding.", encoding);
+
+                    var transformFile = File.ReadAllText(this.TransformFile, encoding);
+
+                    if ((this.parameters != null && this.parameters.Count > 0) || forceParametersTask)
+                    {
+                        ParametersTask parametersTask = new ParametersTask();
+                        if (this.parameters != null)
+                        {
+                            parametersTask.AddParameters(this.parameters);
+                        }
+
+                        transformFile = parametersTask.ApplyParameters(transformFile);
+                    }
+
+                    XmlTransformation transformation = new XmlTransformation(transformFile, false, this.transfomrationLogger);
+
+                    result = transformation.Apply(document);
+
+                    outerXml = document.OuterXml;
+
+                    if (this.Indent)
+                    {
+                        outerXml = this.GetIndentedOuterXml(outerXml, encoding);
+                    }
+
+                    if (this.PreserveWhitespace)
+                    {
+                        outerXml = outerXml.Replace("&#xD;", "\r").Replace("&#xA;", "\n");
                     }
                 }
 
-                this.log.WriteLine("Transformation task is using encoding '{0}'. Change encoding in source file, or use the 'encoding' parameter if you want to change encoding.", encoding);
 
-                var transformFile = File.ReadAllText(this.TransformFile, encoding);
+                var isDestinationStdOut = "stdout".Equals(destinationFilePath, StringComparison.OrdinalIgnoreCase);
 
-                if ((this.parameters != null && this.parameters.Count > 0) || forceParametersTask)
+                if (isDestinationStdOut)
                 {
-                    ParametersTask parametersTask = new ParametersTask();
-                    if (this.parameters != null)
-                    {
-                        parametersTask.AddParameters(this.parameters);
-                    }
-
-                    transformFile = parametersTask.ApplyParameters(transformFile);
-                }
-
-                XmlTransformation transformation = new XmlTransformation(transformFile, false, this.transfomrationLogger);
-
-                bool result = transformation.Apply(document);
-
-                var outerXml = document.OuterXml;
-
-                if (this.Indent)
+                    using (new ConsoleEncodingContext(this.DefaultEncoding))
+                        Console.Out.Write(outerXml);
+                } else
                 {
-                    outerXml = this.GetIndentedOuterXml(outerXml, encoding);
+                    File.WriteAllText(destinationFilePath, outerXml, encoding);
                 }
-
-                if (this.PreserveWhitespace)
-                {
-                    outerXml = outerXml.Replace("&#xD;", "\r").Replace("&#xA;", "\n");
-                }
-
-                File.WriteAllText(destinationFilePath, outerXml, encoding);
 
                 return result;
             }

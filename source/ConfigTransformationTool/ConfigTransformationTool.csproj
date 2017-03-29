@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArgumentsLoader.cs" />
+    <Compile Include="ConsoleEncodingContext.cs" />
     <Compile Include="OutputLog.cs" />
     <Compile Include="ParametersLoader.cs" />
     <Compile Include="ParametersParser.cs" />
