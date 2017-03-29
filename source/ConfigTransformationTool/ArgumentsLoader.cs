@@ -70,21 +70,21 @@ namespace OutcoldSolutions.ConfigTransformationTool
                 if (arg.IndexOf("s:", StringComparison.OrdinalIgnoreCase) == 0
                     || arg.IndexOf("source:", StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    this.SourceFilePath = GetValueFromArguments(arg);
+                    this.SourceFilePath = Environment.ExpandEnvironmentVariables(GetValueFromArguments(arg));
                     continue;
                 }
 
                 if (arg.IndexOf("t:", StringComparison.OrdinalIgnoreCase) == 0
                     || arg.IndexOf("transform:", StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    this.TransformFilePath = GetValueFromArguments(arg);
+                    this.TransformFilePath = Environment.ExpandEnvironmentVariables(GetValueFromArguments(arg));
                     continue;
                 }
 
                 if (arg.IndexOf("d:", StringComparison.OrdinalIgnoreCase) == 0
                     || arg.IndexOf("destination:", StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    this.DestinationFilePath = GetValueFromArguments(arg);
+                    this.DestinationFilePath = Environment.ExpandEnvironmentVariables(GetValueFromArguments(arg));
                     continue;
                 }
 
