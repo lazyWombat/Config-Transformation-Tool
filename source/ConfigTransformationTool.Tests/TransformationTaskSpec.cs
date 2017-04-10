@@ -150,7 +150,7 @@ namespace OutcoldSolutions.ConfigTransformationTool.Suites
 
             // Assert
             Assert.IsTrue(actualResult);
-            Assert.AreEqual(Expected, actualContents);
+            Assert.AreEqual(Expected.NormalizeNewLine(), actualContents.NormalizeNewLine());
         }
 
         [Test]
@@ -227,7 +227,7 @@ namespace OutcoldSolutions.ConfigTransformationTool.Suites
 
             // Assert
             Assert.IsTrue(actualResult);
-            Assert.AreEqual(Expected, actualContents);
+            Assert.AreEqual(Expected.NormalizeNewLine(), actualContents.NormalizeNewLine());
         }
 
         [Test]
@@ -267,7 +267,8 @@ e"" />
 
             string fileContent = File.ReadAllText(resultFile);
 
-            Assert.IsTrue(fileContent.Contains(string.Format(@"value=""60{0}1&lt;group name=&quot;&quot;""", Environment.NewLine)));
+            Assert.IsTrue(fileContent.NormalizeNewLine().Contains(
+                string.Format(@"value=""60{0}1&lt;group name=&quot;&quot;""", Environment.NewLine).NormalizeNewLine()));
         }
 
         [Test]
@@ -351,7 +352,7 @@ e"" />
 
             string fileContent = File.ReadAllText(resultFile, Encoding.UTF8);
 
-            Assert.AreEqual(Result, fileContent);
+            Assert.AreEqual(Result.NormalizeNewLine(), fileContent.NormalizeNewLine());
         }
 
         [Test]
@@ -402,7 +403,7 @@ e"" />
 
             string fileContent = File.ReadAllText(resultFile, Encoding.UTF8);
 
-            Assert.AreEqual(Result, fileContent);
+            Assert.AreEqual(Result.NormalizeNewLine(), fileContent.NormalizeNewLine());
         }
 
         [Test]
@@ -499,7 +500,7 @@ e"" />
             Assert.IsTrue(task.Execute(resultFile));
 
             var fileContent = File.ReadAllText(resultFile, Encoding.UTF8);
-            Assert.That(fileContent, Is.EqualTo(Result));
+            Assert.That(fileContent.NormalizeNewLine(), Is.EqualTo(Result.NormalizeNewLine()));
         }
     }
 }
