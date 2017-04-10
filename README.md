@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/lazyWombat/Config-Transformation-Tool.svg?branch=master)](https://travis-ci.org/lazyWombat/Config-Transformation-Tool)
+
 This is a fork from Config Transformation Tool project on [codeplex](http://ctt.codeplex.com)
 
 XDT Transformation tool is a command tool based on [XDT (web.config) transform engine](http://blogs.msdn.com/b/webdev/archive/2013/01/10/xdt-web-config-transform-engine-released-on-nuget.aspx), which allows you to run XDT transformation on any XML files.
