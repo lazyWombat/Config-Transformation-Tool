@@ -12,6 +12,7 @@ namespace OutcoldSolutions.ConfigTransformationTool
     {
         private static int Main(string[] args)
         {
+            AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
             ArgumentsLoader argumentsLoader = new ArgumentsLoader();
             if (!argumentsLoader.Load(args))
             {
@@ -86,6 +87,21 @@ namespace OutcoldSolutions.ConfigTransformationTool
             {
                 log.WriteErrorLine("Unexpected exception: {0}.", e);
                 return 4;
+            }
+        }
+
+        private static Assembly ResolveAssembly(object sender, ResolveEventArgs args)
+        {
+            var assemblyName = new AssemblyName(args.Name).Name + ".dll";
+
+            var resource = Array.Find(Assembly.GetExecutingAssembly().GetManifestResourceNames(),
+                element => element.EndsWith(assemblyName));
+
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource))
+            {
+                var assemblyData = new byte[stream.Length];
+                stream.Read(assemblyData, 0, assemblyData.Length);
+                return Assembly.Load(assemblyData);
             }
         }
 
