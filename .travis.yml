@@ -1,0 +1,6 @@
+language: csharp
+solution: source/ConfigTransformationTool.sln
+
+script:
+  - xbuild /p:Configuration=Release source/ConfigTransformationTool.sln
+  - mono ./source/packages/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe ./source/ConfigTransformationTool.Tests/bin/Release/OutcoldSolutions.ConfigTransformationTool.Suites.dll
