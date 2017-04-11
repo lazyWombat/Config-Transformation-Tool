@@ -2,6 +2,8 @@
 // Outcold Solutions (http://outcoldman.com)
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Diagnostics;
+
 namespace OutcoldSolutions.ConfigTransformationTool
 {
     using System;
@@ -20,27 +22,22 @@ namespace OutcoldSolutions.ConfigTransformationTool
     /// </summary>
     public class TransformationTask
     {
-        private readonly OutputLog log;
+        private readonly OutputLog _log;
 
-        private readonly TransformationLogger transfomrationLogger;
+        private readonly TransformationLogger _transfomrationLogger;
 
-        private IDictionary<string, string> parameters;
+        private IDictionary<string, string> _parameters;
 
-        private Encoding defaultEncoding;
+        private Encoding _defaultEncoding;
 
         /// <summary>
         /// Empty constructor
         /// </summary>
-        public TransformationTask(OutputLog log)
+        private TransformationTask(OutputLog log)
         {
-            if (log == null)
-            {
-                throw new ArgumentNullException("log");
-            }
-
-            this.log = log;
-            this.transfomrationLogger = new TransformationLogger(log);
-            this.IndentChars = "    ";
+            _log = log ?? throw new ArgumentNullException(nameof(log));
+            _transfomrationLogger = new TransformationLogger(log);
+            IndentChars = "    ";
         }
 
         /// <summary>
@@ -57,9 +54,9 @@ namespace OutcoldSolutions.ConfigTransformationTool
             bool preserveWhitespace)
             : this(log)
         {
-            this.SourceFilePath = sourceFilePath;
-            this.TransformFile = transformFilePath;
-            this.PreserveWhitespace = preserveWhitespace;
+            SourceFilePath = sourceFilePath;
+            TransformFile = transformFilePath;
+            PreserveWhitespace = preserveWhitespace;
         }
 
         /// <summary>
@@ -100,8 +97,8 @@ namespace OutcoldSolutions.ConfigTransformationTool
         /// </summary>
         public Encoding DefaultEncoding
         {
-            get { return this.defaultEncoding ?? Encoding.UTF8; }
-            set { this.defaultEncoding = value; }
+            get => _defaultEncoding ?? Encoding.UTF8;
+            set => _defaultEncoding = value;
         }
 
         /// <summary>
@@ -110,7 +107,7 @@ namespace OutcoldSolutions.ConfigTransformationTool
         /// <param name="parameters">Dictionary of parameters with values.</param>
         public void SetParameters(IDictionary<string, string> parameters)
         {
-            this.parameters = parameters;
+            _parameters = parameters;
         }
 
         /// <summary>
@@ -123,42 +120,42 @@ namespace OutcoldSolutions.ConfigTransformationTool
         {
             if (string.IsNullOrWhiteSpace(destinationFilePath))
             {
-                throw new ArgumentException("Destination file can't be empty.", "destinationFilePath");
+                throw new ArgumentException("Destination file can't be empty.", nameof(destinationFilePath));
             }
 
-            this.log.WriteLine("Start tranformation to '{0}'.", destinationFilePath);
+            _log.WriteLine("Start transformation to '{0}'.", destinationFilePath);
 
-            var isSourceStdIn = "stdin".Equals(this.SourceFilePath, StringComparison.OrdinalIgnoreCase);
-            if (!isSourceStdIn && (string.IsNullOrWhiteSpace(this.SourceFilePath) || !File.Exists(this.SourceFilePath)))
+            var isSourceStdIn = "stdin".Equals(SourceFilePath, StringComparison.OrdinalIgnoreCase);
+            if (!isSourceStdIn && (string.IsNullOrWhiteSpace(SourceFilePath) || !File.Exists(SourceFilePath)))
             {
-                throw new FileNotFoundException("Can't find source file.", this.SourceFilePath);
+                throw new FileNotFoundException("Can't find source file.", SourceFilePath);
             }
 
             var skipTransformation = false;
-            if (string.IsNullOrWhiteSpace(this.TransformFile) || !File.Exists(this.TransformFile))
+            if (string.IsNullOrWhiteSpace(TransformFile) || !File.Exists(TransformFile))
             {
-                if (this.IgnoreMissingTransformation)
+                if (IgnoreMissingTransformation)
                 {
                     skipTransformation = true;
                 }
                 else
                 {
-                    throw new FileNotFoundException("Can't find transform  file.", this.TransformFile);
+                    throw new FileNotFoundException("Can't find transform  file.", TransformFile);
                 }
             }
 
-            this.log.WriteLine("Source file: '{0}'.", this.SourceFilePath);
+            _log.WriteLine("Source file: '{0}'.", SourceFilePath);
             if (skipTransformation)
             {
-                this.log.WriteLine("Transform file not found. Copy source to destination.");
+                _log.WriteLine("Transform file not found. Copy source to destination.");
             } else
             {
-                this.log.WriteLine("Transform  file: '{0}'.", this.TransformFile);
+                _log.WriteLine("Transform  file: '{0}'.", TransformFile);
             }
 
             try
             {
-                Encoding encoding = this.DefaultEncoding;
+                var encoding = DefaultEncoding;
 
                 bool result;
                 string outerXml;
@@ -167,27 +164,29 @@ namespace OutcoldSolutions.ConfigTransformationTool
                 {
                     if (isSourceStdIn)
                     {
-                        outerXml = Console.In.ReadToEnd();
-                    } else
+                        using (new ConsoleEncodingContext(DefaultEncoding))
+                            outerXml = Console.In.ReadToEnd();
+                    }
+                    else
                     {
-                        outerXml = File.ReadAllText(this.SourceFilePath);
+                        outerXml = File.ReadAllText(SourceFilePath, DefaultEncoding);
                     }
                     result = true;
                 } else
                 {
-                    XmlDocument document = new XmlDocument()
+                    var document = new XmlDocument
                     {
-                        PreserveWhitespace = this.PreserveWhitespace
+                        PreserveWhitespace = PreserveWhitespace
                     };
 
                     if (isSourceStdIn)
                     {
-                        using (new ConsoleEncodingContext(this.DefaultEncoding))
+                        using (new ConsoleEncodingContext(DefaultEncoding))
                             document.Load(Console.In);
                     }
                     else
                     {
-                        document.Load(this.SourceFilePath);
+                        document.Load(SourceFilePath);
                     }
                     if (document.FirstChild.NodeType == XmlNodeType.XmlDeclaration)
                     {
@@ -198,33 +197,33 @@ namespace OutcoldSolutions.ConfigTransformationTool
                         }
                     }
 
-                    this.log.WriteLine("Transformation task is using encoding '{0}'. Change encoding in source file, or use the 'encoding' parameter if you want to change encoding.", encoding);
+                    _log.WriteLine("Transformation task is using encoding '{0}'. Change encoding in source file, or use the 'encoding' parameter if you want to change encoding.", encoding);
 
-                    var transformFile = File.ReadAllText(this.TransformFile, encoding);
+                    var transformFile = File.ReadAllText(TransformFile, encoding);
 
-                    if ((this.parameters != null && this.parameters.Count > 0) || forceParametersTask)
+                    if ((_parameters != null && _parameters.Count > 0) || forceParametersTask)
                     {
-                        ParametersTask parametersTask = new ParametersTask();
-                        if (this.parameters != null)
+                        var parametersTask = new ParametersTask();
+                        if (_parameters != null)
                         {
-                            parametersTask.AddParameters(this.parameters);
+                            parametersTask.AddParameters(_parameters);
                         }
 
                         transformFile = parametersTask.ApplyParameters(transformFile);
                     }
 
-                    XmlTransformation transformation = new XmlTransformation(transformFile, false, this.transfomrationLogger);
+                    var transformation = new XmlTransformation(transformFile, false, _transfomrationLogger);
 
                     result = transformation.Apply(document);
 
                     outerXml = document.OuterXml;
 
-                    if (this.Indent)
+                    if (Indent)
                     {
-                        outerXml = this.GetIndentedOuterXml(outerXml, encoding);
+                        outerXml = GetIndentedOuterXml(outerXml, encoding);
                     }
 
-                    if (this.PreserveWhitespace)
+                    if (PreserveWhitespace)
                     {
                         outerXml = outerXml.Replace("&#xD;", "\r").Replace("&#xA;", "\n");
                     }
@@ -235,7 +234,7 @@ namespace OutcoldSolutions.ConfigTransformationTool
 
                 if (isDestinationStdOut)
                 {
-                    using (new ConsoleEncodingContext(this.DefaultEncoding))
+                    using (new ConsoleEncodingContext(DefaultEncoding))
                         Console.Out.Write(outerXml);
                 } else
                 {
@@ -246,7 +245,7 @@ namespace OutcoldSolutions.ConfigTransformationTool
             }
             catch (Exception e)
             {
-                this.log.WriteErrorLine("Exception while transforming: {0}.", e);
+                _log.WriteErrorLine("Exception while transforming: {0}.", e);
                 return false;
             }
         }
@@ -256,7 +255,7 @@ namespace OutcoldSolutions.ConfigTransformationTool
             var xmlWriterSettings = new XmlWriterSettings
             {
                 Indent = true,
-                IndentChars = this.IndentChars ?? new string(' ', 4),
+                IndentChars = IndentChars ?? new string(' ', 4),
                 Encoding = encoding
             };
 
@@ -267,7 +266,7 @@ namespace OutcoldSolutions.ConfigTransformationTool
                     XDocument.Parse(xml).WriteTo(xmlWriter);
                 }
 
-                return this.WorkAroundToRestoreProperXmlDeclarationTag(xml, buffer.ToString());
+                return WorkAroundToRestoreProperXmlDeclarationTag(xml, buffer.ToString());
             }
         }
 

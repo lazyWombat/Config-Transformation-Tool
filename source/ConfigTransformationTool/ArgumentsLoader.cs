@@ -16,9 +16,9 @@ namespace OutcoldSolutions.ConfigTransformationTool
         {
             get
             {
-                return !string.IsNullOrWhiteSpace(this.SourceFilePath)
-                    && !string.IsNullOrWhiteSpace(this.TransformFilePath)
-                    && !string.IsNullOrWhiteSpace(this.DestinationFilePath);
+                return !string.IsNullOrWhiteSpace(SourceFilePath)
+                    && !string.IsNullOrWhiteSpace(TransformFilePath)
+                    && !string.IsNullOrWhiteSpace(DestinationFilePath);
             }
         }
 
@@ -54,91 +54,91 @@ namespace OutcoldSolutions.ConfigTransformationTool
         /// <param name="args"></param>
         public bool Load(string[] args)
         {
-            this.DestinationFilePath = string.Empty;
-            this.SourceFilePath = string.Empty;
-            this.TransformFilePath = string.Empty;
-            this.ParametersString = string.Empty;
-            this.ParametersFile = string.Empty;
-            this.ForceParametersTask = false;
-            this.Verbose = false;
-            this.PreserveWhitespace = false;
-            this.Indent = false;
-            this.IgnoreMissingTransformation = false;
+            DestinationFilePath = string.Empty;
+            SourceFilePath = string.Empty;
+            TransformFilePath = string.Empty;
+            ParametersString = string.Empty;
+            ParametersFile = string.Empty;
+            ForceParametersTask = false;
+            Verbose = false;
+            PreserveWhitespace = false;
+            Indent = false;
+            IgnoreMissingTransformation = false;
 
-            foreach (string arg in args)
+            foreach (var arg in args)
             {
                 if (arg.IndexOf("s:", StringComparison.OrdinalIgnoreCase) == 0
                     || arg.IndexOf("source:", StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    this.SourceFilePath = Environment.ExpandEnvironmentVariables(GetValueFromArguments(arg));
+                    SourceFilePath = Environment.ExpandEnvironmentVariables(GetValueFromArguments(arg));
                     continue;
                 }
 
                 if (arg.IndexOf("t:", StringComparison.OrdinalIgnoreCase) == 0
                     || arg.IndexOf("transform:", StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    this.TransformFilePath = Environment.ExpandEnvironmentVariables(GetValueFromArguments(arg));
+                    TransformFilePath = Environment.ExpandEnvironmentVariables(GetValueFromArguments(arg));
                     continue;
                 }
 
                 if (arg.IndexOf("d:", StringComparison.OrdinalIgnoreCase) == 0
                     || arg.IndexOf("destination:", StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    this.DestinationFilePath = Environment.ExpandEnvironmentVariables(GetValueFromArguments(arg));
+                    DestinationFilePath = Environment.ExpandEnvironmentVariables(GetValueFromArguments(arg));
                     continue;
                 }
 
                 if (arg.IndexOf("p:", StringComparison.OrdinalIgnoreCase) == 0
                     || arg.IndexOf("parameters:", StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    this.ParametersString = GetValueFromArguments(arg);
+                    ParametersString = GetValueFromArguments(arg);
                     continue;
                 }
 
                 if (arg.IndexOf("pf:", StringComparison.OrdinalIgnoreCase) == 0
                     || arg.IndexOf("parameters.file:", StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    this.ParametersFile = GetValueFromArguments(arg);
+                    ParametersFile = GetValueFromArguments(arg);
                     continue;
                 }
 
                 if (arg.Equals("fpt", StringComparison.OrdinalIgnoreCase))
                 {
-                    this.ForceParametersTask = true;
+                    ForceParametersTask = true;
                     continue;
                 }
 
                 if (arg.Equals("v", StringComparison.OrdinalIgnoreCase)
                     || arg.Equals("verbose", StringComparison.OrdinalIgnoreCase))
                 {
-                    this.Verbose = true;
+                    Verbose = true;
                     continue;
                 }
 
                 if (arg.Equals("pw", StringComparison.OrdinalIgnoreCase)
                     || arg.Equals("preservewhitespace", StringComparison.OrdinalIgnoreCase))
                 {
-                    this.PreserveWhitespace = true;
+                    PreserveWhitespace = true;
                     continue;
                 }
 
                 if (arg.Equals("i", StringComparison.OrdinalIgnoreCase)
                     || arg.Equals("indent", StringComparison.OrdinalIgnoreCase))
                 {
-                    this.Indent = true;
+                    Indent = true;
                     continue;
                 }
 
                 if (arg.Equals("imt", StringComparison.OrdinalIgnoreCase)
                     || arg.Equals("ignoremissingtransform", StringComparison.OrdinalIgnoreCase))
                 {
-                    this.IgnoreMissingTransformation = true;
+                    IgnoreMissingTransformation = true;
                     continue;
                 }
                 if (arg.IndexOf("ic:", StringComparison.OrdinalIgnoreCase) == 0
                     || arg.IndexOf("indentchars:", StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    this.IndentChars = GetValueFromArguments(arg);
+                    IndentChars = GetValueFromArguments(arg);
                     continue;
                 }
 
@@ -155,7 +155,7 @@ namespace OutcoldSolutions.ConfigTransformationTool
 
                     try
                     {
-                        this.DefaultEncoding = GetEncoding(name);
+                        DefaultEncoding = GetEncoding(name);
                     }
                     catch
                     {
@@ -167,7 +167,7 @@ namespace OutcoldSolutions.ConfigTransformationTool
                 if (arg.Equals("q", StringComparison.OrdinalIgnoreCase)
                 || arg.Equals("quiet", StringComparison.OrdinalIgnoreCase))
                 {
-                    this.Quiet = true;
+                    Quiet = true;
                     continue;
                 }
             }
@@ -177,8 +177,8 @@ namespace OutcoldSolutions.ConfigTransformationTool
 
         private static string GetValueFromArguments(string arg)
         {
-            int startIndex = arg.IndexOf(":", StringComparison.Ordinal) + 1;
-            string result = arg.Substring(startIndex, arg.Length - startIndex);
+            var startIndex = arg.IndexOf(":", StringComparison.Ordinal) + 1;
+            var result = arg.Substring(startIndex, arg.Length - startIndex);
 
             // Do smart quotes trimming, only if we have quotes from both sides
             while (result.Length > 1 && result.IndexOf('"') == 0 && result.LastIndexOf('"') == (result.Length - 1))

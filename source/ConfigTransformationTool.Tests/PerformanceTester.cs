@@ -14,9 +14,9 @@ namespace OutcoldSolutions.ConfigTransformationTool.Suites
     {
         public PerformanceTester(Action action)
         {
-            this.Action = action;
-            this.MaxTime = TimeSpan.MinValue;
-            this.MinTime = TimeSpan.MaxValue;
+            Action = action;
+            MaxTime = TimeSpan.MinValue;
+            MinTime = TimeSpan.MaxValue;
         }
 
         public TimeSpan TotalTime { get; private set; }
@@ -35,10 +35,10 @@ namespace OutcoldSolutions.ConfigTransformationTool.Suites
         public void MeasureExecTime()
         {
             var sw = Stopwatch.StartNew();
-            this.Action();
+            Action();
             sw.Stop();
-            this.AverageTime = sw.Elapsed;
-            this.TotalTime = sw.Elapsed;
+            AverageTime = sw.Elapsed;
+            TotalTime = sw.Elapsed;
         }
 
         /// <summary>
@@ -48,16 +48,16 @@ namespace OutcoldSolutions.ConfigTransformationTool.Suites
         /// <returns></returns>
         public void MeasureExecTime(int iterations)
         {
-            this.Action(); // warm up
+            Action(); // warm up
             var sw = Stopwatch.StartNew();
-            for (int i = 0; i < iterations; i++)
+            for (var i = 0; i < iterations; i++)
             {
-                this.Action();
+                Action();
             }
 
             sw.Stop();
-            this.AverageTime = new TimeSpan(sw.Elapsed.Ticks / iterations);
-            this.TotalTime = sw.Elapsed;
+            AverageTime = new TimeSpan(sw.Elapsed.Ticks / iterations);
+            TotalTime = sw.Elapsed;
         }
 
         /// <summary>
@@ -67,32 +67,32 @@ namespace OutcoldSolutions.ConfigTransformationTool.Suites
         /// <param name = "iterations">the number of times to perform action</param>
         public void MeasureExecTimeWithMetrics(int iterations)
         {
-            TimeSpan total = new TimeSpan(0);
+            var total = new TimeSpan(0);
 
-            this.Action(); // warm up
-            for (int i = 0; i < iterations; i++)
+            Action(); // warm up
+            for (var i = 0; i < iterations; i++)
             {
                 var sw = Stopwatch.StartNew();
 
-                this.Action();
+                Action();
 
                 sw.Stop();
-                TimeSpan thisIteration = sw.Elapsed;
+                var thisIteration = sw.Elapsed;
                 total += thisIteration;
 
-                if (thisIteration > this.MaxTime)
+                if (thisIteration > MaxTime)
                 {
-                    this.MaxTime = thisIteration;
+                    MaxTime = thisIteration;
                 }
 
-                if (thisIteration < this.MinTime)
+                if (thisIteration < MinTime)
                 {
-                    this.MinTime = thisIteration;
+                    MinTime = thisIteration;
                 }
             }
 
-            this.TotalTime = total;
-            this.AverageTime = new TimeSpan(total.Ticks / iterations);
+            TotalTime = total;
+            AverageTime = new TimeSpan(total.Ticks / iterations);
         }
     }
 }

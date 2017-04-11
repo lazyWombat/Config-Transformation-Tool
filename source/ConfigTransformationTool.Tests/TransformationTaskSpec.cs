@@ -16,7 +16,7 @@ namespace OutcoldSolutions.ConfigTransformationTool.Suites
         [Test]
         public void Transfarmotaion_Should_Happend()
         {
-            const string Source = @"<?xml version=""1.0""?>
+            const string source = @"<?xml version=""1.0""?>
 
 <configuration xmlns=""http://schemas.itisnotadomain/Configuration/v2.0"" >
 
@@ -40,7 +40,7 @@ namespace OutcoldSolutions.ConfigTransformationTool.Suites
 	
 </configuration>";
 
-            const string Transform = @"<?xml version=""1.0""?>
+            const string transform = @"<?xml version=""1.0""?>
 <configuration xmlns:xdt=""http://schemas.microsoft.com/XML-Document-Transform"" xmlns=""http://schemas.itisnotadomain/Configuration/v2.0"">
 	
 	<custom>
@@ -55,22 +55,22 @@ namespace OutcoldSolutions.ConfigTransformationTool.Suites
 	
 </configuration>";
 
-            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-            string sourceFile = Path.Combine(baseDirectory, "Transfarmotaion_Should_Happend.config");
-            string transformFile = Path.Combine(baseDirectory, "Transfarmotaion_Should_Happend_transform.config");
-            string resultFile = Path.Combine(baseDirectory, "Transfarmotaion_Should_Happend_result.config");
+            var sourceFile = Path.Combine(baseDirectory, "Transfarmotaion_Should_Happend.config");
+            var transformFile = Path.Combine(baseDirectory, "Transfarmotaion_Should_Happend_transform.config");
+            var resultFile = Path.Combine(baseDirectory, "Transfarmotaion_Should_Happend_result.config");
 
             // Create source file
-            this.WriteToFile(sourceFile, Source);
+            WriteToFile(sourceFile, source);
 
             // Create transform file
-            this.WriteToFile(transformFile, Transform);
+            WriteToFile(transformFile, transform);
 
-            TransformationTask task = new TransformationTask(this.Log, sourceFile, transformFile, preserveWhitespace: false);
+            var task = new TransformationTask(Log, sourceFile, transformFile, preserveWhitespace: false);
             Assert.IsTrue(task.Execute(resultFile));
 
-            string fileContent = File.ReadAllText(resultFile);
+            var fileContent = File.ReadAllText(resultFile);
             
             // Check that transformation happend
             Assert.IsTrue(fileContent.Contains(@"value=""601"""));
@@ -79,7 +79,7 @@ namespace OutcoldSolutions.ConfigTransformationTool.Suites
         [Test]
         public void TransfarmotaionWithNewLineBetweenTags_ShouldKeepNewLines()
         {
-            const string Source = @"<?xml version=""1.0""?>
+            const string source = @"<?xml version=""1.0""?>
 <configuration>
     <configSections>
         <sectionGroup name=""userSettings"" type=""System.Configuration.UserSettingsGroup, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"">
@@ -95,7 +95,7 @@ namespace OutcoldSolutions.ConfigTransformationTool.Suites
     </userSettings>
 </configuration>";
 
-            const string Transform = @"<?xml version=""1.0""?>
+            const string transform = @"<?xml version=""1.0""?>
 <configuration xmlns:xdt=""http://schemas.microsoft.com/XML-Document-Transform"">
     <configSections>
         <sectionGroup name=""userSettings"" type=""System.Configuration.UserSettingsGroup, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"">
@@ -111,7 +111,7 @@ namespace OutcoldSolutions.ConfigTransformationTool.Suites
     </userSettings>
 </configuration>";
 
-            const string Expected = @"<?xml version=""1.0""?>
+            const string expected = @"<?xml version=""1.0""?>
 <configuration>
     <configSections>
         <sectionGroup name=""userSettings"" type=""System.Configuration.UserSettingsGroup, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"">
@@ -127,19 +127,19 @@ namespace OutcoldSolutions.ConfigTransformationTool.Suites
     </userSettings>
 </configuration>";
 
-            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-            string sourceFile = Path.Combine(baseDirectory, "TransfarmotaionWithNewLineBetweenTags_ShouldKeepNewLines.config");
-            string transformFile = Path.Combine(baseDirectory, "TransfarmotaionWithNewLineBetweenTags_ShouldKeepNewLines_transform.config");
-            string resultFile = Path.Combine(baseDirectory, "TransfarmotaionWithNewLineBetweenTags_ShouldKeepNewLines_result.config");
+            var sourceFile = Path.Combine(baseDirectory, "TransfarmotaionWithNewLineBetweenTags_ShouldKeepNewLines.config");
+            var transformFile = Path.Combine(baseDirectory, "TransfarmotaionWithNewLineBetweenTags_ShouldKeepNewLines_transform.config");
+            var resultFile = Path.Combine(baseDirectory, "TransfarmotaionWithNewLineBetweenTags_ShouldKeepNewLines_result.config");
 
             // Create source file
-            this.WriteToFile(sourceFile, Source);
+            WriteToFile(sourceFile, source);
 
             // Create transform file
-            this.WriteToFile(transformFile, Transform);
+            WriteToFile(transformFile, transform);
 
-            var sut = new TransformationTask(this.Log, sourceFile, transformFile, preserveWhitespace: true)
+            var sut = new TransformationTask(Log, sourceFile, transformFile, preserveWhitespace: true)
                 {
                     Indent = true
                 };
@@ -150,13 +150,13 @@ namespace OutcoldSolutions.ConfigTransformationTool.Suites
 
             // Assert
             Assert.IsTrue(actualResult);
-            Assert.AreEqual(Expected.NormalizeNewLine(), actualContents.NormalizeNewLine());
+            Assert.AreEqual(expected.NormalizeNewLine(), actualContents.NormalizeNewLine());
         }
 
         [Test]
         public void TransfarmotaionWithNewLineBetweenTags_ShouldKeepXmlDeclaration()
         {
-            const string Source = @"<?xml version=""1.0"" encoding=""utf-16""?>
+            const string source = @"<?xml version=""1.0"" encoding=""utf-16""?>
 <configuration>
     <configSections>
         <sectionGroup name=""userSettings"" type=""System.Configuration.UserSettingsGroup, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"">
@@ -172,7 +172,7 @@ namespace OutcoldSolutions.ConfigTransformationTool.Suites
     </userSettings>
 </configuration>";
 
-            const string Transform = @"<?xml version=""1.0""?>
+            const string transform = @"<?xml version=""1.0""?>
 <configuration xmlns:xdt=""http://schemas.microsoft.com/XML-Document-Transform"">
     <configSections>
         <sectionGroup name=""userSettings"" type=""System.Configuration.UserSettingsGroup, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"">
@@ -188,7 +188,7 @@ namespace OutcoldSolutions.ConfigTransformationTool.Suites
     </userSettings>
 </configuration>";
 
-            const string Expected = @"<?xml version=""1.0"" encoding=""utf-16""?>
+            const string expected = @"<?xml version=""1.0"" encoding=""utf-16""?>
 <configuration>
     <configSections>
         <sectionGroup name=""userSettings"" type=""System.Configuration.UserSettingsGroup, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"">
@@ -204,19 +204,19 @@ namespace OutcoldSolutions.ConfigTransformationTool.Suites
     </userSettings>
 </configuration>";
 
-            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-            string sourceFile = Path.Combine(baseDirectory, "TransfarmotaionWithNewLineBetweenTags_ShouldKeepXmlDeclaration.config");
-            string transformFile = Path.Combine(baseDirectory, "TransfarmotaionWithNewLineBetweenTags_ShouldKeepXmlDeclaration_transform.config");
-            string resultFile = Path.Combine(baseDirectory, "TransfarmotaionWithNewLineBetweenTags_ShouldKeepXmlDeclaration_result.config");
+            var sourceFile = Path.Combine(baseDirectory, "TransfarmotaionWithNewLineBetweenTags_ShouldKeepXmlDeclaration.config");
+            var transformFile = Path.Combine(baseDirectory, "TransfarmotaionWithNewLineBetweenTags_ShouldKeepXmlDeclaration_transform.config");
+            var resultFile = Path.Combine(baseDirectory, "TransfarmotaionWithNewLineBetweenTags_ShouldKeepXmlDeclaration_result.config");
 
             // Create source file
-            this.WriteToFile(sourceFile, Source);
+            WriteToFile(sourceFile, source);
 
             // Create transform file
-            this.WriteToFile(transformFile, Transform);
+            WriteToFile(transformFile, transform);
 
-            var sut = new TransformationTask(this.Log, sourceFile, transformFile, preserveWhitespace: true)
+            var sut = new TransformationTask(Log, sourceFile, transformFile, preserveWhitespace: true)
             {
                 Indent = true
             };
@@ -227,13 +227,13 @@ namespace OutcoldSolutions.ConfigTransformationTool.Suites
 
             // Assert
             Assert.IsTrue(actualResult);
-            Assert.AreEqual(Expected.NormalizeNewLine(), actualContents.NormalizeNewLine());
+            Assert.AreEqual(expected.NormalizeNewLine(), actualContents.NormalizeNewLine());
         }
 
         [Test]
         public void TransfarmotaionWithNewLineInValue_ShouldKeepNewLine()
         {
-            const string Source = @"<?xml version=""1.0""?>
+            const string source = @"<?xml version=""1.0""?>
 
 <configuration xmlns=""http://schemas.itisnotadomain/Configuration/v2.0"" >
 
@@ -242,7 +242,7 @@ e"" />
 
 </configuration>";
 
-            const string Transform = @"<?xml version=""1.0""?>
+            const string transform = @"<?xml version=""1.0""?>
 <configuration xmlns:xdt=""http://schemas.microsoft.com/XML-Document-Transform"" xmlns=""http://schemas.itisnotadomain/Configuration/v2.0"">
 	
 	<value key=""Test1"" value=""60
@@ -250,22 +250,22 @@ e"" />
 	
 </configuration>";
 
-            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-            string sourceFile = Path.Combine(baseDirectory, "TransfarmotaionWithNewLineInValue_ShouldKeepNewLine.config");
-            string transformFile = Path.Combine(baseDirectory, "TransfarmotaionWithNewLineInValue_ShouldKeepNewLine_transform.config");
-            string resultFile = Path.Combine(baseDirectory, "TransfarmotaionWithNewLineInValue_ShouldKeepNewLine_result.config");
+            var sourceFile = Path.Combine(baseDirectory, "TransfarmotaionWithNewLineInValue_ShouldKeepNewLine.config");
+            var transformFile = Path.Combine(baseDirectory, "TransfarmotaionWithNewLineInValue_ShouldKeepNewLine_transform.config");
+            var resultFile = Path.Combine(baseDirectory, "TransfarmotaionWithNewLineInValue_ShouldKeepNewLine_result.config");
 
             // Create source file
-            this.WriteToFile(sourceFile, Source);
+            WriteToFile(sourceFile, source);
 
             // Create transform file
-            this.WriteToFile(transformFile, Transform);
+            WriteToFile(transformFile, transform);
 
-            TransformationTask task = new TransformationTask(this.Log, sourceFile, transformFile, preserveWhitespace: true);
+            var task = new TransformationTask(Log, sourceFile, transformFile, preserveWhitespace: true);
             Assert.IsTrue(task.Execute(resultFile));
 
-            string fileContent = File.ReadAllText(resultFile);
+            var fileContent = File.ReadAllText(resultFile);
 
             Assert.IsTrue(fileContent.NormalizeNewLine().Contains(
                 string.Format(@"value=""60{0}1&lt;group name=&quot;&quot;""", Environment.NewLine).NormalizeNewLine()));
@@ -274,33 +274,33 @@ e"" />
         [Test]
         public void TransfarmotaionWithChineseCharaters_ShouldTransform()
         {
-            const string Source = @"<?xml version=""1.0"" encoding=""utf-8""?>
+            const string source = @"<?xml version=""1.0"" encoding=""utf-8""?>
 
 <configuration xmlns=""http://schemas.itisnotadomain/Configuration/v2.0"" >
 	<custom key=""Test"" value="""" />
 </configuration>";
 
-            const string Transform = @"<?xml version=""1.0"" encoding=""utf-8""?>
+            const string transform = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <configuration xmlns:xdt=""http://schemas.microsoft.com/XML-Document-Transform"" xmlns=""http://schemas.itisnotadomain/Configuration/v2.0"">
 	<custom key=""Test"" value=""倉頡; 仓颉"" xdt:Transform=""Replace""  xdt:Locator=""Match(key)"" />
 </configuration>";
 
-            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-            string sourceFile = Path.Combine(baseDirectory, "TransfarmotaionWithChineseCharaters_ShouldTransform.config");
-            string transformFile = Path.Combine(baseDirectory, "TransfarmotaionWithChineseCharaters_ShouldTransform_transform.config");
-            string resultFile = Path.Combine(baseDirectory, "TransfarmotaionWithChineseCharaters_ShouldTransform_result.config");
+            var sourceFile = Path.Combine(baseDirectory, "TransfarmotaionWithChineseCharaters_ShouldTransform.config");
+            var transformFile = Path.Combine(baseDirectory, "TransfarmotaionWithChineseCharaters_ShouldTransform_transform.config");
+            var resultFile = Path.Combine(baseDirectory, "TransfarmotaionWithChineseCharaters_ShouldTransform_result.config");
 
             // Create source file
-            this.WriteToFile(sourceFile, Source, Encoding.UTF8);
+            WriteToFile(sourceFile, source, Encoding.UTF8);
 
             // Create transform file
-            this.WriteToFile(transformFile, Transform, Encoding.UTF8);
+            WriteToFile(transformFile, transform, Encoding.UTF8);
 
-            TransformationTask task = new TransformationTask(this.Log, sourceFile, transformFile, preserveWhitespace: true);
+            var task = new TransformationTask(Log, sourceFile, transformFile, preserveWhitespace: true);
             Assert.IsTrue(task.Execute(resultFile));
 
-            string fileContent = File.ReadAllText(resultFile, Encoding.UTF8);
+            var fileContent = File.ReadAllText(resultFile, Encoding.UTF8);
 
             Assert.IsTrue(fileContent.Contains(@"value=""倉頡; 仓颉"""));
         }
@@ -308,7 +308,7 @@ e"" />
         [Test]
         public void Issue442278()
         {
-            const string Source = @"<?xml version=""1.0""?>
+            const string source = @"<?xml version=""1.0""?>
 <connectionStrings>
         <x></x>
         <x></x>
@@ -317,48 +317,48 @@ e"" />
         <x></x>
 </connectionStrings>";
 
-            const string Transform = @"<?xml version=""1.0""?>
+            const string transform = @"<?xml version=""1.0""?>
 <connectionStrings xdt:Transform=""Replace"" xmlns:xdt=""http://schemas.microsoft.com/XML-Document-Transform"">
         <a>aaa</a>
         <b>bbb</b>
         <c>ccc</c>
 </connectionStrings>";
 
-            const string Result = @"<?xml version=""1.0""?>
+            const string result = @"<?xml version=""1.0""?>
 <connectionStrings>
     <a>aaa</a>
     <b>bbb</b>
     <c>ccc</c>
 </connectionStrings>";
 
-            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-            string sourceFile = Path.Combine(baseDirectory, "Issue442278.config");
-            string transformFile = Path.Combine(baseDirectory, "Issue442278_transform.config");
-            string resultFile = Path.Combine(baseDirectory, "Issue442278_result.config");
+            var sourceFile = Path.Combine(baseDirectory, "Issue442278.config");
+            var transformFile = Path.Combine(baseDirectory, "Issue442278_transform.config");
+            var resultFile = Path.Combine(baseDirectory, "Issue442278_result.config");
 
             // Create source file
-            this.WriteToFile(sourceFile, Source, Encoding.UTF8);
+            WriteToFile(sourceFile, source, Encoding.UTF8);
 
             // Create transform file
-            this.WriteToFile(transformFile, Transform, Encoding.UTF8);
+            WriteToFile(transformFile, transform, Encoding.UTF8);
 
-            TransformationTask task = new TransformationTask(this.Log, sourceFile, transformFile, preserveWhitespace: true)
+            var task = new TransformationTask(Log, sourceFile, transformFile, preserveWhitespace: true)
                                           {
                                               Indent = true
                                           };
 
             Assert.IsTrue(task.Execute(resultFile));
 
-            string fileContent = File.ReadAllText(resultFile, Encoding.UTF8);
+            var fileContent = File.ReadAllText(resultFile, Encoding.UTF8);
 
-            Assert.AreEqual(Result.NormalizeNewLine(), fileContent.NormalizeNewLine());
+            Assert.AreEqual(result.NormalizeNewLine(), fileContent.NormalizeNewLine());
         }
 
         [Test]
         public void Issue442278_CanSpecifyIndentChars()
         {
-            const string Source = @"<?xml version=""1.0""?>
+            const string source = @"<?xml version=""1.0""?>
 <connectionStrings>
         <x></x>
         <x></x>
@@ -367,33 +367,33 @@ e"" />
         <x></x>
 </connectionStrings>";
 
-            const string Transform = @"<?xml version=""1.0""?>
+            const string transform = @"<?xml version=""1.0""?>
 <connectionStrings xdt:Transform=""Replace"" xmlns:xdt=""http://schemas.microsoft.com/XML-Document-Transform"">
         <a>aaa</a>
         <b>bbb</b>
         <c>ccc</c>
 </connectionStrings>";
 
-            const string Result = @"<?xml version=""1.0""?>
+            const string result = @"<?xml version=""1.0""?>
 <connectionStrings>
   <a>aaa</a>
   <b>bbb</b>
   <c>ccc</c>
 </connectionStrings>";
 
-            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-            string sourceFile = Path.Combine(baseDirectory, "Issue442278.config");
-            string transformFile = Path.Combine(baseDirectory, "Issue442278_transform.config");
-            string resultFile = Path.Combine(baseDirectory, "Issue442278_result.config");
+            var sourceFile = Path.Combine(baseDirectory, "Issue442278.config");
+            var transformFile = Path.Combine(baseDirectory, "Issue442278_transform.config");
+            var resultFile = Path.Combine(baseDirectory, "Issue442278_result.config");
 
             // Create source file
-            this.WriteToFile(sourceFile, Source, Encoding.UTF8);
+            WriteToFile(sourceFile, source, Encoding.UTF8);
 
             // Create transform file
-            this.WriteToFile(transformFile, Transform, Encoding.UTF8);
+            WriteToFile(transformFile, transform, Encoding.UTF8);
 
-            TransformationTask task = new TransformationTask(this.Log, sourceFile, transformFile, preserveWhitespace: true)
+            var task = new TransformationTask(Log, sourceFile, transformFile, preserveWhitespace: true)
             {
                 Indent = true,
                 IndentChars = "  "
@@ -401,20 +401,20 @@ e"" />
 
             Assert.IsTrue(task.Execute(resultFile));
 
-            string fileContent = File.ReadAllText(resultFile, Encoding.UTF8);
+            var fileContent = File.ReadAllText(resultFile, Encoding.UTF8);
 
-            Assert.AreEqual(Result.NormalizeNewLine(), fileContent.NormalizeNewLine());
+            Assert.AreEqual(result.NormalizeNewLine(), fileContent.NormalizeNewLine());
         }
 
         [Test]
         public void Execute_IndentTrueIndentCharsNull_DoesNotThrowException()
         {
-            const string Source = @"<?xml version=""1.0""?>
+            const string source = @"<?xml version=""1.0""?>
 <connectionStrings>
         <x></x>
 </connectionStrings>";
 
-            const string Transform = @"<?xml version=""1.0""?>
+            const string transform = @"<?xml version=""1.0""?>
 <connectionStrings xdt:Transform=""Replace"" xmlns:xdt=""http://schemas.microsoft.com/XML-Document-Transform"">
         <a>aaa</a>
 </connectionStrings>";
@@ -425,10 +425,10 @@ e"" />
             var transformFile = Path.Combine(baseDirectory, "Execute_IndentTrueIndentCharsNull_DoesNotThrowException-Transform.config");
             var resultFile = Path.Combine(baseDirectory, "Execute_IndentTrueIndentCharsNull_DoesNotThrowException-Result.config");
 
-            this.WriteToFile(sourceFile, Source, Encoding.UTF8);
-            this.WriteToFile(transformFile, Transform, Encoding.UTF8);
+            WriteToFile(sourceFile, source, Encoding.UTF8);
+            WriteToFile(transformFile, transform, Encoding.UTF8);
 
-            var task = new TransformationTask(this.Log, sourceFile, transformFile, preserveWhitespace: true)
+            var task = new TransformationTask(Log, sourceFile, transformFile, preserveWhitespace: true)
             {
                 Indent = true,
                 IndentChars = null
@@ -440,11 +440,11 @@ e"" />
         [Test]
         public void Execute_TransformFileDoesNotContainUtf8ByteOrderMark_EncodingSpecifiedToUtf8__DoesNotThrowException()
         {
-            const string Source = @"<connectionStrings>
+            const string source = @"<connectionStrings>
         <x></x>
 </connectionStrings>";
 
-            const string Transform = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            const string transform = @"<?xml version=""1.0"" encoding=""UTF-8""?>
 <connectionStrings xdt:Transform=""Replace"" xmlns:xdt=""http://schemas.microsoft.com/XML-Document-Transform"">
         <a>aaa</a>
 </connectionStrings>";
@@ -455,10 +455,10 @@ e"" />
             var transformFile = Path.Combine(baseDirectory, "Execute_IndentTrueIndentCharsNull_DoesNotThrowException-Transform.config");
             var resultFile = Path.Combine(baseDirectory, "Execute_IndentTrueIndentCharsNull_DoesNotThrowException-Result.config");
 
-            this.WriteToFile(sourceFile, Source, Encoding.UTF8);
-            this.WriteToFile(transformFile, Transform, Encoding.ASCII);
+            WriteToFile(sourceFile, source, Encoding.UTF8);
+            WriteToFile(transformFile, transform, Encoding.ASCII);
 
-            var task = new TransformationTask(this.Log, sourceFile, transformFile, preserveWhitespace: true)
+            var task = new TransformationTask(Log, sourceFile, transformFile, preserveWhitespace: true)
             {
                 // This is the equivilent as specifying "encoding:UTF8"
                 DefaultEncoding = Encoding.UTF8
@@ -470,16 +470,16 @@ e"" />
         [Test]
         public void Execute_IndentTrue_SourceFileDoesNotDefineXmlHeader_NoXmlHeaderInResultsFile()
         {
-            const string Source = @"<connectionStrings>
+            const string source = @"<connectionStrings>
         <x></x>
 </connectionStrings>";
 
-            const string Transform = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+            const string transform = @"<?xml version=""1.0"" encoding=""UTF-8""?>
 <connectionStrings xdt:Transform=""Replace"" xmlns:xdt=""http://schemas.microsoft.com/XML-Document-Transform"">
         <a>aaa</a>
 </connectionStrings>";
 
-            const string Result = @"<connectionStrings>
+            const string result = @"<connectionStrings>
     <a>aaa</a>
 </connectionStrings>";
 
@@ -489,10 +489,10 @@ e"" />
             var transformFile = Path.Combine(baseDirectory, "Execute_IndentTrueIndentCharsNull_DoesNotThrowException-Transform.config");
             var resultFile = Path.Combine(baseDirectory, "Execute_IndentTrueIndentCharsNull_DoesNotThrowException-Result.config");
 
-            this.WriteToFile(sourceFile, Source, Encoding.UTF8);
-            this.WriteToFile(transformFile, Transform, Encoding.UTF8);
+            WriteToFile(sourceFile, source, Encoding.UTF8);
+            WriteToFile(transformFile, transform, Encoding.UTF8);
 
-            var task = new TransformationTask(this.Log, sourceFile, transformFile, preserveWhitespace: true)
+            var task = new TransformationTask(Log, sourceFile, transformFile, preserveWhitespace: true)
                 {
                     Indent = true
                 };
@@ -500,7 +500,7 @@ e"" />
             Assert.IsTrue(task.Execute(resultFile));
 
             var fileContent = File.ReadAllText(resultFile, Encoding.UTF8);
-            Assert.That(fileContent.NormalizeNewLine(), Is.EqualTo(Result.NormalizeNewLine()));
+            Assert.That(fileContent.NormalizeNewLine(), Is.EqualTo(result.NormalizeNewLine()));
         }
     }
 }

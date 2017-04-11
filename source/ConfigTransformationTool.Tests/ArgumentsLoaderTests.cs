@@ -7,7 +7,7 @@
     [TestFixture]
     public class ArgumentsLoaderTests
     {
-        public static IEnumerable Load_Encoding_SetsDefaultEncoding_TestCases
+        public static IEnumerable LoadEncodingSetsDefaultEncodingTestCases
         {
             get
             {
@@ -34,7 +34,7 @@
         }
 
         [Test]
-        [TestCaseSource(nameof(Load_Encoding_SetsDefaultEncoding_TestCases))]
+        [TestCaseSource(nameof(LoadEncodingSetsDefaultEncodingTestCases))]
         public bool Load_Encoding_SetsDefaultEncoding(string input, Encoding expected)
         {
             // Arrange

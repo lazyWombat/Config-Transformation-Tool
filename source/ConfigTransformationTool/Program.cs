@@ -13,7 +13,7 @@ namespace OutcoldSolutions.ConfigTransformationTool
         private static int Main(string[] args)
         {
             AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
-            ArgumentsLoader argumentsLoader = new ArgumentsLoader();
+            var argumentsLoader = new ArgumentsLoader();
             if (!argumentsLoader.Load(args))
             {
                 return 4;
@@ -107,8 +107,8 @@ namespace OutcoldSolutions.ConfigTransformationTool
 
         private static void ShowToolHelp()
         {
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            string exeFile = assembly.ManifestModule.Name;
+            var assembly = Assembly.GetExecutingAssembly();
+            var exeFile = assembly.ManifestModule.Name;
 
             Console.WriteLine("{0}, {1}, http://ctt.codeplex.com", GetTitleString(assembly), GetVersionString(assembly));
             Console.WriteLine("by OutcoldSolutions, http://outcoldman.com, {0}", DateTime.Today.Year);
@@ -155,7 +155,7 @@ namespace OutcoldSolutions.ConfigTransformationTool
 
         private static string GetTitleString(Assembly asm)
         {
-            object[] attributes = asm.GetCustomAttributes(typeof(AssemblyTitleAttribute), true);
+            var attributes = asm.GetCustomAttributes(typeof(AssemblyTitleAttribute), true);
             if (attributes.Length > 0 && attributes[0] is AssemblyTitleAttribute)
             {
                 return (attributes[0] as AssemblyTitleAttribute).Title;
@@ -168,7 +168,7 @@ namespace OutcoldSolutions.ConfigTransformationTool
         {
             if (asm != null && !string.IsNullOrEmpty(asm.FullName))
             {
-                string[] parts = asm.FullName.Split(',');
+                var parts = asm.FullName.Split(',');
                 if (parts.Length > 1)
                 {
                     return parts[1].Trim();

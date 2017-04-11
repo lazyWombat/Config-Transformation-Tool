@@ -23,12 +23,12 @@ namespace OutcoldSolutions.ConfigTransformationTool.Suites
         [Test]
         public void LoadParameters_FileWithParametes_ParametersShouldBeLoaded()
         {
-            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-            string parametersFile = Path.Combine(baseDirectory, "ParametersFile.xml");
-            this.WriteToFile(parametersFile, ParametersFileContent);
+            var parametersFile = Path.Combine(baseDirectory, "ParametersFile.xml");
+            WriteToFile(parametersFile, ParametersFileContent);
 
-            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            var parameters = new Dictionary<string, string>();
             ParametersLoader.LoadParameters(parametersFile, parameters);
 
             Assert.AreEqual(3, parameters.Count);

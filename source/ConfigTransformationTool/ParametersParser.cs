@@ -13,11 +13,11 @@ namespace OutcoldSolutions.ConfigTransformationTool
     /// </summary>
     public class ParametersParser
     {
-        private readonly OutputLog log;
+        private readonly OutputLog _log;
 
         public ParametersParser(OutputLog log)
         {
-            this.log = log;
+            _log = log;
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace OutcoldSolutions.ConfigTransformationTool
         {
             if (parameters == null)
             {
-                throw new ArgumentNullException("parameters");
+                throw new ArgumentNullException(nameof(parameters));
             }
 
             if (string.IsNullOrWhiteSpace(parametersString))
@@ -42,13 +42,13 @@ namespace OutcoldSolutions.ConfigTransformationTool
 
             var source = parametersString.ToCharArray();
 
-            int index = 0;
+            var index = 0;
 
-            bool fParameterNameRead = true;
-            bool fForceParameterValueRead = false;
+            var fParameterNameRead = true;
+            var fForceParameterValueRead = false;
 
-            StringBuilder parameterName = new StringBuilder();
-            StringBuilder parameterValue = new StringBuilder();
+            var parameterName = new StringBuilder();
+            var parameterValue = new StringBuilder();
 
             while (index < source.Length)
             {
@@ -114,7 +114,7 @@ namespace OutcoldSolutions.ConfigTransformationTool
 
             foreach (var parameter in parameters)
             {
-                this.log.WriteLine("Parameter Name: '{0}', Value: '{1}'", parameter.Key, parameter.Value);
+                _log.WriteLine("Parameter Name: '{0}', Value: '{1}'", parameter.Key, parameter.Value);
             }
         }
 
